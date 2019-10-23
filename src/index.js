@@ -1,11 +1,17 @@
-import { http } from './module/http'
 import { utils } from './utils/utils'
+import { ajax } from './module/ajax'
 
 class Collect {
     constructor(){
         this.version = '1.0.0';
         console.log('埋点的版本号：' + this.version);
         this.pageUrl = location.href;
+        this.pageName = '';
+        this.pvSuccess = false;
+
+        utils.on(window,'load',function(e){
+            console.log("load");
+        })
     }
 }
 

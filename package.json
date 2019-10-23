@@ -4,7 +4,8 @@
   "description": "打包纯js",
   "main": "index.js",
   "scripts": {
-    "bundle": "webpack"
+    "bundle": "webpack",
+    "dev": "webpack-dev-server"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
     "babel-preset-env": "^1.7.0",
     "clean-webpack-plugin": "^3.0.0",
     "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.9"
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.9.0"
   }
 }
