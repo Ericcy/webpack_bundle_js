@@ -121,3 +121,55 @@ utils.copyObj = function (copyObj) {
     }
     return obj;
 }
+
+// 判断是否是手机端
+utils.plantform = function (){
+    const is_mobi = navigator.userAgent.toLowerCase().match(/(ipod|ipad|iphone|android|coolpad|mmp|smartphone|midp|wap|xoom|symbian|j2me|blackberry|wince)/i) != null;
+    if(is_mobi){
+        return 'mobile'
+    }else{
+        return 'PC'
+    }
+}
+
+//检测当前窗口是否隐藏状态
+function getHiddenProp(){
+    var prefixes = ['webkit','moz','ms','o'];
+
+    // if 'hidden' is natively supported just return it
+    if ('hidden' in document) return 'hidden';
+
+    // otherwise loop over all the known prefixes until we find one
+    for (var i = 0; i < prefixes.length; i++) {
+        if ((prefixes[i] + 'Hidden') in document) 
+            return prefixes[i] + 'Hidden';
+    }
+
+    // otherwise it's not supported
+    return null;
+}
+//检测当前窗口是不是显示状态
+function getVisibilityState() {
+    var prefixes = ['webkit', 'moz', 'ms', 'o'];
+    if ('visibilityState' in document) return 'visibilityState';
+    for (var i = 0; i < prefixes.length; i++) {
+        if ((prefixes[i] + 'VisibilityState') in document)
+            return prefixes[i] + 'VisibilityState';
+    }
+    // otherwise it's not supported
+    return null;
+}
+
+//查看当前窗口的状态（显示在标题标签上）
+utils.showState = function(cb){
+    var isHidden = getHiddenProp();
+    if (isHidden) {
+        var evtname = isHidden.replace(/[H|h]idden/, '') + 'visibilitychange';
+        utils.on(document,evtname, function () {
+        //   document.title = document[getVisibilityState()]+"状态";
+            if(document[getVisibilityState()] === 'visible'){
+               cb&&cb()
+            }
+        }, false);
+    }
+}

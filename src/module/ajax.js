@@ -1,12 +1,13 @@
-export function ajax(obj) {
+export function ajax(obj,cb) {
     //默认参数
     var defaults = {
         type: 'get',
         data: {},
-        url: '#',
+        url: 'http://localhost:8080',
         dataType: 'text',
         async: true,
-        success: function (data) { }
+        success: function (data) { },
+        error: function (error) { cb(error) }
     }
     //处理形参，传递参数的时候就覆盖默认的参数，不传递就使用默认的参数
     for (var key in obj) {
@@ -28,7 +29,7 @@ export function ajax(obj) {
     }
     // 处理get请求参数并处理中文乱码问题
     if (defaults.type == 'get' && param) {
-        defaults.url += '&' + encodeURI(param);
+        defaults.url += '?' + encodeURI(param);
     }
     // 2.准备发送
     xhr.open(defaults.type, defaults.url, defaults.async);
@@ -58,6 +59,10 @@ export function ajax(obj) {
                 data = JSON.parse(data);
             }
             defaults.success(data);
+            defaults.error(xhr.status)
+            
+        }else if(xhr.status != 200){
+            defaults.error(xhr.status)
         }
     }
 }

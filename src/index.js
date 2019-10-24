@@ -1,16 +1,72 @@
 import { utils } from './utils/utils'
-import { ajax } from './module/ajax'
+import { PV } from './module/pagevisit'
 
 class Collect {
     constructor(){
         this.version = '1.0.0';
         console.log('埋点的版本号：' + this.version);
+        this.mall_userId = '';
         this.pageUrl = location.href;
-        this.pageName = '';
-        this.pvSuccess = false;
+        this.pageName = document.title || '';
+        this.pvSuccess = true;
+        this.currentTime = new Date().getTime();
+        this.sessionId = utils.uuid()
+        this.setPv = '';
 
-        utils.on(window,'load',function(e){
-            console.log("load");
+        this.pvData = {
+            sessionId: utils.uuid(),
+            userid: '',
+            pageName: document.title || '',
+            pageUrl: location.href,
+            currentTime: new Date().getTime()
+        };
+
+        this.beginTime = ''; // onbeforeunload执行的开始时间
+
+        utils.on(window,'load',(e) => {
+            // 页面加载上报pv
+            PV(this.pvData,(res)=>{
+                if(res != 200){
+                    this.pvSuccess = false;
+                }
+            })
+            // 轮询上报pv
+            // this.setPv = setInterval(() => {
+            //     PV(pvData,(res)=>{
+            //         if(res != 200){
+            //             this.pvSuccess = false;
+            //         }
+            //     })
+            // },5000)
+        })
+        window.onbeforeunload = function (){
+            this.beginTime = new Date().getTime();
+        };
+        window.onunload = function () {
+            let differTime = new Date().getTime() - this.beginTime;
+            if (differTime <= 5) { // 页面关闭
+                PV(this.pvData,(res)=>{
+                    if(res != 200){
+                        this.pvSuccess = false;
+                    }
+                })
+            } else { // 页面刷新
+                PV(this.pvData,(res)=>{
+                    if(res != 200){
+                        this.pvSuccess = false;
+                    }
+                })
+            }
+
+        }
+
+        utils.showState(()=>{
+            // 最小化到最大化时pv的上报（这个需要不需要待商榷）
+            PV(this.pvData,(res)=>{
+                if(res != 200){
+                    this.pvSuccess = false;
+                }
+            })
         })
     }
 }
