@@ -202,3 +202,31 @@ utils.cookie = {
         this.setItem(name, "", -1);
     }
 }
+
+/**
+ * storage
+ */
+utils.storage = {
+    getFromSession: function(key) {
+        var obj = window.sessionStorage.getItem(key);
+        return JSON.parse(obj);
+    },
+
+    getFromLocal: function(key) {
+        var obj = window.localStorage.getItem(key);
+        return JSON.parse(obj);
+    },
+
+    removeFromSession: function(key) {
+        window.sessionStorage.removeItem(key);
+    },
+    removeFromLocal: function(key) {
+        window.localStorage.removeItem(key);
+    },
+    set2Session: function(key, value) {
+        window.sessionStorage.setItem(key, JSON.stringify(value));
+    },
+    set2Local: function(key, value) {
+        window.localStorage.setItem(key, JSON.stringify(value));
+    }
+};
