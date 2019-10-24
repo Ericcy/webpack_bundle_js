@@ -86,7 +86,6 @@ class Collect {
             PV(this.sendUrl,this.commonUpData)
         })
         utils.on(window, 'pushState',(e)=>{
-            console.log('pushState',e)
             this.commonUpData.from = utils.storage.getFromSession('url');
             utils.storage.set2Session('url',e.target.location.href)
             this.commonUpData.pageUrl = e.target.location.href;
