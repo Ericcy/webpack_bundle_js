@@ -87,10 +87,9 @@ utils.remove = function(target, type, handler) {
     if(target.removeEventListener) {
         target.removeEventListener(type, handler);
     } else {
-        target.detachEvent("on" + type,
-                function(event) {
-                    return handler.call(target, event);
-                }, true);
+        target.detachEvent("on" + type, function(event) {
+            return handler.call(target, event);
+        }, true);
     }
 };
 

@@ -7,7 +7,8 @@
     <title>埋点测试页</title>
 </head>
 <body>
-    <h1>test</h1>
+    <h1 collect-data="{type: 'index_hd_h1', desc: '点击h1标题'}" >clickid</h1>
+    <h1 id="dispatchid">dispatchid</h1>
     <p>--------------------------------------------</p>
     <a href="demo1.html">demo1</a>
     <div class="login">
@@ -16,6 +17,11 @@
     </div>
     <script src="./dfsta.js"></script>
     <script>
+        var dispatchDOM = document.getElementById('dispatchid');
+        dispatchDOM.onclick = function (e) {
+            e.stopPropagation();
+            dfsite.DFcollect.dispatch('click',dispatchDOM,{extraInfo:'extraInfo'})
+        }
     </script>
 </body>
 </html>
