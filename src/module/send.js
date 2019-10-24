@@ -4,7 +4,7 @@ export function dealWithUrl(url, obj) {
     // let items = decoupling(times);
     let objStr = utils.changeJSON2Query(obj)
     let urlLength = (url + (url.indexOf('?') < 0 ? '?' : '&') + objStr).length;
-    if (urlLength < 203) {
+    if (urlLength < 2083) {
         imgReport(url, obj);
     } else if (navigator.sendBeacon) {
         sendBeacon(url, obj);

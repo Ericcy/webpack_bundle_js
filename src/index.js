@@ -1,6 +1,5 @@
 import { utils } from './utils/utils'
 import { PV } from './module/pagevisit'
-import { dealWithUrl } from './module/send'
 import { clickHandler } from './module/clickHandler'
 import { dispatch } from './module/dispatch'
 
@@ -10,20 +9,17 @@ class Collect {
         console.log('埋点的版本号：' + this.version);
         this.sendUrl = 'http://10.8.6.6';
         this.mall_userId = utils.cookie.getItem('mall_userId') || '';
-        this.pageUrl = location.href;
-        this.pageName = document.title || '';
-        this.pvSuccess = true;
-        this.currentTime = new Date().getTime();
-        this.sessionId = utils.uuid()
-        this.setPv = '';
-
-        this.pvData = {
-            sessionId: utils.uuid(),
-            userid: utils.cookie.getItem('mall_userId') || '',
-            pageName: document.title || '',
+        this.commonUpData = {
+            deviceId: '111',
+            mall_userId: utils.cookie.getItem('mall_userId') || '',
             pageUrl: location.href,
-            currentTime: new Date().getTime()
-        };
+            pageName: document.title || '',
+            currentTime: new Date().getTime(),
+            sessionId: utils.uuid(),
+            from: document.referrer
+        }
+        this.pvSuccess = true;
+        this.setPv = '';
         this.beginTime = ''; // onbeforeunload执行的开始时间
 
 
@@ -35,8 +31,10 @@ class Collect {
 
         //页面初始化
         utils.on(window,'load',(e) => {
-            // 页面加载上报pv
-            dealWithUrl(this.sendUrl,this.pvData)
+            // 页面加载上报pv并记录当前
+            utils.storage.set2Session('url',location.href)
+            PV(this.sendUrl,this.commonUpData)
+            // dealWithUrl(this.sendUrl,this.commonUpData)
             // PV(this.pvData,(res)=>{
             //     if(res != 200){
             //         this.pvSuccess = false;
@@ -58,19 +56,20 @@ class Collect {
         window.onunload = function () {
             let differTime = new Date().getTime() - this.beginTime;
             if (differTime <= 5) { // 页面关闭
-                this.pvData.currentTime = new Date().getTime();
-                dealWithUrl(this.sendUrl,this.pvData)
+                this.commonUpData.currentTime = new Date().getTime();
+                PV(this.sendUrl,this.commonUpData)
             } else { // 页面刷新
-                this.pvData.currentTime = new Date().getTime();
-                dealWithUrl(this.sendUrl,this.pvData)
+                // this.commonUpData.currentTime = new Date().getTime();
+                // dealWithUrl(this.sendUrl,this.commonUpData)
             }
 
         }
 
         utils.showState(()=>{
             // 最小化到最大化时pv的上报（这个需要不需要待商榷）
-            this.pvData.currentTime = new Date().getTime();
-            dealWithUrl(this.sendUrl,this.pvData)
+            // this.commonUpData.currentTime = new Date().getTime();
+            // this.commonUpData.from = document.referrer;
+            // dealWithUrl(this.sendUrl,this.commonUpData)
             // PV(this.pvData,(res)=>{
             //     if(res != 200){
             //         this.pvSuccess = false;
@@ -78,6 +77,24 @@ class Collect {
             // })
         })
 
+        var _wr = function(type) {
+            var orig = history[type];
+            return function() {
+                var rv = orig.apply(this, arguments);
+               var e = new Event(type);
+                e.arguments = arguments;
+                window.dispatchEvent(e);
+                return rv;
+            };
+        };
+        history.pushState = _wr('pushState');
+        history.replaceState = _wr('replaceState');
+        utils.on(window, 'replaceState',(e)=>{
+            this.commonUpData.from = utils.storage.getFromSession('url');
+            utils.storage.set2Session('url',e.target.location.href)
+            this.commonUpData.pageUrl = e.target.location.href;
+            PV(this.sendUrl,this.commonUpData)
+        })
     }
 }
 
