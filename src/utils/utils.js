@@ -93,6 +93,27 @@ utils.remove = function(target, type, handler) {
     }
 };
 
+//判断是否是标准json字符串
+utils.stringToJSON = function(str) {
+    if (typeof str == 'string') {
+        try {
+            var obj=JSON.parse(str);
+            if(typeof obj == 'object' && obj ){
+                return obj;
+            }else{
+                console.log('error：json格式不正确');
+                console.log(str);
+                return false;
+            }
+
+        } catch(e) {
+            console.log('error：json格式不正确');
+            console.log(str);
+            return false;
+        }
+    }
+}
+
 //将json转为字符串
 utils.changeJSON2Query =  function (jsonObj) {
     var args = '';
