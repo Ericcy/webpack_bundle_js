@@ -50,6 +50,8 @@ class Collect {
             //     })
             // },5000)
         })
+
+        // 页面关闭的时候上报PV(效果有待验证)
         window.onbeforeunload = function (){
             this.beginTime = new Date().getTime();
         };
@@ -65,6 +67,7 @@ class Collect {
 
         }
 
+        // tab由不可见到可见上报PV
         utils.showState(()=>{
             // 最小化到最大化时pv的上报（这个需要不需要待商榷）
             // this.commonUpData.currentTime = new Date().getTime();
@@ -76,7 +79,8 @@ class Collect {
             //     }
             // })
         })
-
+        
+        // 检测路由变化上报PV
         var _wr = function(type) {
             var orig = history[type];
             return function() {
