@@ -1,6 +1,8 @@
 import { utils } from './utils/utils'
 import { PV } from './module/pagevisit'
 import { dealWithUrl } from './module/send'
+import { clickHandler } from './module/clickHandler'
+import { dispatch } from './module/dispatch'
 
 class Collect {
     constructor(){
@@ -24,6 +26,14 @@ class Collect {
         };
         this.beginTime = ''; // onbeforeunload执行的开始时间
 
+
+        //自定义事件初始化
+        this.dispatch = dispatch;
+        
+        //点击事件初始化
+        utils.on(document.body, 'click', clickHandler);
+
+        //页面初始化
         utils.on(window,'load',(e) => {
             // 页面加载上报pv
             dealWithUrl(this.sendUrl,this.pvData)
