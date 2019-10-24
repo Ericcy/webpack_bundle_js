@@ -5,7 +5,7 @@ class Collect {
     constructor(){
         this.version = '1.0.0';
         console.log('埋点的版本号：' + this.version);
-        this.sendUrl = 'http://10.8.6.6';
+        this.sendUrl = 'http://localhost:8088';
         this.mall_userId = utils.cookie.getItem('mall_userId') || '';
         this.commonUpData = {
             deviceId: '111',
@@ -80,6 +80,13 @@ class Collect {
         history.pushState = _wr('pushState');
         history.replaceState = _wr('replaceState');
         utils.on(window, 'replaceState',(e)=>{
+            this.commonUpData.from = utils.storage.getFromSession('url');
+            utils.storage.set2Session('url',e.target.location.href)
+            this.commonUpData.pageUrl = e.target.location.href;
+            PV(this.sendUrl,this.commonUpData)
+        })
+        utils.on(window, 'pushState',(e)=>{
+            console.log('pushState',e)
             this.commonUpData.from = utils.storage.getFromSession('url');
             utils.storage.set2Session('url',e.target.location.href)
             this.commonUpData.pageUrl = e.target.location.href;
