@@ -173,3 +173,32 @@ utils.showState = function(cb){
         }, false);
     }
 }
+
+// cookie
+utils.cookie = {
+    setItem: function(name, value, expires) {
+        var text = encodeURIComponent(value),
+            MILLISECONDS_OF_DAY = 24 * 60 * 60 * 1000;
+        if (typeof expires === "number") {
+            var date = new Date();
+            date.setTime(date.getTime() + expires * MILLISECONDS_OF_DAY);
+            if (expires == -1) {
+                text += "; expires=-1";
+            } else {
+                text += "; expires=" + date.toUTCString();
+            }
+        }
+        text += "; path=/; domain=.dongfangfuli.com";
+        document.cookie = name + "=" + text;
+    },
+    getItem: function(name) {
+        var arr = document.cookie.match(new RegExp("(^| )" + name + "=([^;]*)(;|$)"));
+        if (arr !== null) {
+            return decodeURIComponent(arr[2]);
+        }
+        return null;
+    },
+    removeItem: function(name) {
+        this.setItem(name, "", -1);
+    }
+}

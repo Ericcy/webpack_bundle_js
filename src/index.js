@@ -1,11 +1,13 @@
 import { utils } from './utils/utils'
 import { PV } from './module/pagevisit'
+import { dealWithUrl } from './module/send'
 
 class Collect {
     constructor(){
         this.version = '1.0.0';
         console.log('埋点的版本号：' + this.version);
-        this.mall_userId = '';
+        this.sendUrl = 'http://10.8.6.6';
+        this.mall_userId = utils.cookie.getItem('mall_userId') || '';
         this.pageUrl = location.href;
         this.pageName = document.title || '';
         this.pvSuccess = true;
@@ -15,24 +17,25 @@ class Collect {
 
         this.pvData = {
             sessionId: utils.uuid(),
-            userid: '',
+            userid: utils.cookie.getItem('mall_userId') || '',
             pageName: document.title || '',
             pageUrl: location.href,
             currentTime: new Date().getTime()
         };
-
         this.beginTime = ''; // onbeforeunload执行的开始时间
 
         utils.on(window,'load',(e) => {
             // 页面加载上报pv
-            PV(this.pvData,(res)=>{
-                if(res != 200){
-                    this.pvSuccess = false;
-                }
-            })
+            dealWithUrl(this.sendUrl,this.pvData)
+            // PV(this.pvData,(res)=>{
+            //     if(res != 200){
+            //         this.pvSuccess = false;
+            //     }
+            // })
             // 轮询上报pv
             // this.setPv = setInterval(() => {
-            //     PV(pvData,(res)=>{
+            //     this.pvData.currentTime = new Date().getTime();
+            //     PV(this.pvData,(res)=>{
             //         if(res != 200){
             //             this.pvSuccess = false;
             //         }
@@ -45,29 +48,26 @@ class Collect {
         window.onunload = function () {
             let differTime = new Date().getTime() - this.beginTime;
             if (differTime <= 5) { // 页面关闭
-                PV(this.pvData,(res)=>{
-                    if(res != 200){
-                        this.pvSuccess = false;
-                    }
-                })
+                this.pvData.currentTime = new Date().getTime();
+                dealWithUrl(this.sendUrl,this.pvData)
             } else { // 页面刷新
-                PV(this.pvData,(res)=>{
-                    if(res != 200){
-                        this.pvSuccess = false;
-                    }
-                })
+                this.pvData.currentTime = new Date().getTime();
+                dealWithUrl(this.sendUrl,this.pvData)
             }
 
         }
 
         utils.showState(()=>{
             // 最小化到最大化时pv的上报（这个需要不需要待商榷）
-            PV(this.pvData,(res)=>{
-                if(res != 200){
-                    this.pvSuccess = false;
-                }
-            })
+            this.pvData.currentTime = new Date().getTime();
+            dealWithUrl(this.sendUrl,this.pvData)
+            // PV(this.pvData,(res)=>{
+            //     if(res != 200){
+            //         this.pvSuccess = false;
+            //     }
+            // })
         })
+
     }
 }
 
