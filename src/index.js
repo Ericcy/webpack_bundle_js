@@ -12,6 +12,7 @@ class Collect {
         this.commonUpData = {
             deviceId: '111',
             mall_userId: utils.cookie.getItem('mall_userId') || '',
+            stage: utils.get3hostName() || '', // 来区分是哪个工会
             pageUrl: location.href,
             pageName: document.title || '',
             currentTime: new Date().getTime(),
@@ -94,6 +95,7 @@ class Collect {
         history.pushState = _wr('pushState');
         history.replaceState = _wr('replaceState');
         utils.on(window, 'replaceState',(e)=>{
+            // 把当前的url存到session中,作为下次跳转的来源(from)
             this.commonUpData.from = utils.storage.getFromSession('url');
             utils.storage.set2Session('url',e.target.location.href)
             this.commonUpData.pageUrl = e.target.location.href;

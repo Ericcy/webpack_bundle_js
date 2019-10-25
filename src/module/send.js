@@ -1,7 +1,5 @@
 import { utils } from '../utils/utils'
 export function dealWithUrl(url, obj) {
-    // let times = performanceInfo(appId);
-    // let items = decoupling(times);
     let objStr = utils.changeJSON2Query(obj)
     let urlLength = (url + (url.indexOf('?') < 0 ? '?' : '&') + objStr).length;
     if (urlLength < 2083) {

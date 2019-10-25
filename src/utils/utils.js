@@ -250,3 +250,15 @@ utils.storage = {
         window.localStorage.setItem(key, JSON.stringify(value));
     }
 };
+
+// 工会的三级域名上报
+utils.get3hostName = function(){
+    const currentUrl = location.host;
+    var tempArr = currentUrl.split('.');
+    if(parseInt(tempArr[0]))return false;
+    if(tempArr.length>3){
+        return tempArr[1];
+    }else{
+        return false;
+    }
+}
