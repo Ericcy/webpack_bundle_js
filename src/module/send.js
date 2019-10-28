@@ -1,5 +1,5 @@
 import { utils } from '../utils/utils'
-export function dealWithUrl(url, obj) {
+export function mySend(url, obj) {
     let objStr = utils.changeJSON2Query(obj)
     let urlLength = (url + (url.indexOf('?') < 0 ? '?' : '&') + objStr).length;
     if (urlLength < 2083) {
@@ -13,7 +13,7 @@ export function dealWithUrl(url, obj) {
 
 function sendBeacon(url, data) {
     data.currentTime = new Date().getTime();
-    data.pageurl = location.href;
+    // data.pageurl = location.href;
     let headers = {
         type: 'application/x-www-form-urlencoded'
     };
@@ -26,7 +26,7 @@ function imgReport(url, data) {
         return;
     }
     data.currentTime = new Date().getTime();
-    data.pageurl = location.href;
+    // data.pageurl = location.href;
     let image = document.createElement('img');
     let objStr = utils.changeJSON2Query(data)
     let name = 'img_' + (+new Date());
@@ -40,7 +40,7 @@ function imgReport(url, data) {
 
 function xmlLoadData(url, data) {
     data.currentTime = new Date().getTime();
-    data.pageurl = location.href;
+    // data.pageurl = location.href;
     var client = null;
     if (window.XMLHttpRequest) {
         client = new XMLHttpRequest();

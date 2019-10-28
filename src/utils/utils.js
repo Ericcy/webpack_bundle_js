@@ -251,7 +251,7 @@ utils.storage = {
     }
 };
 
-// 工会的三级域名上报
+// 工会的三级域名上报（两种情况1.优先是union字段判断（新的工会标准）。2.再判断三级域名（老的工会））
 utils.get3hostName = function(){
     const currentUrl = location.host;
     var tempArr = currentUrl.split('.');

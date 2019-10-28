@@ -23,6 +23,8 @@
             e.stopPropagation();
             dfsite.DFcollect.dispatch('click',dispatchDOM,{extraInfo:'extraInfo'})
         }
+        var dfCollect = new DF_SDK_Collect()
+        dfCollect.pageVisit()
     </script>
 </body>
 </html>

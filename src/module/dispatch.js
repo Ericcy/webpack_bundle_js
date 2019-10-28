@@ -1,5 +1,5 @@
 //用户自定义采集
-import { dealWithUrl } from './send'
+import { mySend } from './send'
 
 /**
  * @method dispatch
@@ -8,5 +8,5 @@ import { dealWithUrl } from './send'
  * @parame extraInfo 额外信息
  **/
 export function dispatch(eType, element, extraInfo){
-    dealWithUrl('url', extraInfo)
+    mySend('url', extraInfo)
 }

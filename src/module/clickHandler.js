@@ -1,5 +1,5 @@
 //点击事件的回调
-import { dealWithUrl } from './send'
+import { mySend } from './send'
 import { utils } from '../utils/utils'
 
 /**
@@ -13,6 +13,6 @@ export function  clickHandler(e) {
 
     //有埋点属性采取上报
     if(domData){
-        dealWithUrl('url', domData)
+        mySend('url', domData)
     }
 }

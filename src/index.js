@@ -1,122 +1,75 @@
 import { utils } from './utils/utils'
-import { PV } from './module/pagevisit'
 import { clickHandler } from './module/clickHandler'
 import { dispatch } from './module/dispatch'
+import { mySend } from './module/send'
+import { TYPE } from './utils/type'
 
-class Collect {
-    constructor(){
+class DF_SDK_Collect {
+    constructor(obj){
         this.version = '1.0.0';
         console.log('埋点的版本号：' + this.version);
         this.sendUrl = 'http://localhost:8088';
-        this.mall_userId = utils.cookie.getItem('mall_userId') || '';
         this.commonUpData = {
-            deviceId: '111',
-            mall_userId: utils.cookie.getItem('mall_userId') || '',
-            stage: utils.get3hostName() || '', // 来区分是哪个工会
-            pageUrl: location.href,
-            pageName: document.title || '',
-            currentTime: new Date().getTime(),
-            sessionId: utils.uuid(),
-            from: document.referrer
+            mall_userId: utils.cookie.getItem('mall_userId') || '',      // 用户id
+            sessionId: utils.uuid(),                                     // 设备号
+            plantform: '',                                               // 平台
+            pageUrl: location.href,                                      // 当前页面地址
+            pageName: document.title || '',                              // 当前页面的标题
+            pageFrom: document.referrer,                                 // 当前页面的来源
+            eventType: '',                                               // 事件类型
+            currentTime: new Date().getTime(),                           // 当前时间
+            //leaveTime: 0,                                                // 离开页面的时间
+            extraData: null                                              // 扩展参数
         }
-        this.pvSuccess = true;
-        this.setPv = '';
-        this.beginTime = ''; // onbeforeunload执行的开始时间
-
-
+        // 初始化的时候重置参数
+        this._extraData(obj)
         //自定义事件初始化
         this.dispatch = dispatch;
         
         //点击事件初始化
         utils.on(document.body, 'click', clickHandler);
-
-        //页面初始化
-        utils.on(window,'load',(e) => {
-            // 页面加载上报pv并记录当前
-            utils.storage.set2Session('url',location.href)
-            PV(this.sendUrl,this.commonUpData)
-            // dealWithUrl(this.sendUrl,this.commonUpData)
-            // PV(this.pvData,(res)=>{
-            //     if(res != 200){
-            //         this.pvSuccess = false;
-            //     }
-            // })
-            // 轮询上报pv
-            // this.setPv = setInterval(() => {
-            //     this.pvData.currentTime = new Date().getTime();
-            //     PV(this.pvData,(res)=>{
-            //         if(res != 200){
-            //             this.pvSuccess = false;
-            //         }
-            //     })
-            // },5000)
-        })
-
-        // 页面关闭的时候上报PV(效果有待验证)
-        window.onbeforeunload = function (){
-            this.beginTime = new Date().getTime();
-        };
-        window.onunload = function () {
-            let differTime = new Date().getTime() - this.beginTime;
-            if (differTime <= 5) { // 页面关闭
-                this.commonUpData.currentTime = new Date().getTime();
-                PV(this.sendUrl,this.commonUpData)
-            } else { // 页面刷新
-                // this.commonUpData.currentTime = new Date().getTime();
-                // dealWithUrl(this.sendUrl,this.commonUpData)
-            }
-
-        }
-
-        // tab由不可见到可见上报PV
-        utils.showState(()=>{
-            // 最小化到最大化时pv的上报（这个需要不需要待商榷）
-            // this.commonUpData.currentTime = new Date().getTime();
-            // this.commonUpData.from = document.referrer;
-            // dealWithUrl(this.sendUrl,this.commonUpData)
-            // PV(this.pvData,(res)=>{
-            //     if(res != 200){
-            //         this.pvSuccess = false;
-            //     }
-            // })
-        })
         
-        // 检测路由变化上报PV
-        var _wr = function(type) {
-            var orig = history[type];
-            return function() {
-                var rv = orig.apply(this, arguments);
-               var e = new Event(type);
-                e.arguments = arguments;
-                window.dispatchEvent(e);
-                return rv;
-            };
-        };
-        history.pushState = _wr('pushState');
-        history.replaceState = _wr('replaceState');
-        utils.on(window, 'replaceState',(e)=>{
-            // 把当前的url存到session中,作为下次跳转的来源(from)
-            this.commonUpData.from = utils.storage.getFromSession('url');
-            utils.storage.set2Session('url',e.target.location.href)
-            this.commonUpData.pageUrl = e.target.location.href;
-            PV(this.sendUrl,this.commonUpData)
-        })
-        utils.on(window, 'pushState',(e)=>{
-            this.commonUpData.from = utils.storage.getFromSession('url');
-            utils.storage.set2Session('url',e.target.location.href)
-            this.commonUpData.pageUrl = e.target.location.href;
-            PV(this.sendUrl,this.commonUpData)
-        })
+    }
+
+    _addNewData(oldObj,newObj,key){
+        if(Object.prototype.toString.call(newObj[key]) === '[object String]'){
+            oldObj[key] = newObj[key]
+        }else{
+            for(let sItem in newObj[key]){
+                if(oldObj[key].hasOwnProperty(sItem)){
+                    oldObj[key][sItem] = newObj[key][sItem]
+                }else{
+                    oldObj[key][sItem] = newObj[key][sItem]
+                }
+            }
+        }
+    }
+    _extraData(obj){
+        var that = this;
+        for(let item in obj){
+            if(that.hasOwnProperty(item)){
+                this._addNewData(that,obj,item)
+            }else{
+                this._addNewData(that,obj,item)
+            }
+        }
+    }
+   
+    /**
+     * @param {Object} extraObj 需要额外上报的数据
+     * 一般包括：
+     * - mall_userId
+     * - sessionId
+     * - plantform
+     * - pageFrom
+     * - extraData
+     */
+    pageVisit(extraObj){
+        this._extraData(extraObj)
+        this.commonUpData.eventType = TYPE.PV;
+        mySend(this.sendUrl,this.commonUpData);
     }
 }
 
 
-const DFcollect = new Collect();
-if(!window.dfsite || Object.prototype.toString(window.dfsite) !== '[object Object]'){
-    console.log("window.dfsite对象不存在或者非Object类型，重新创建");
-    window.dfsite = Object.create(null);
-}
-window.dfsite.DFcollect = DFcollect;
-export default DFcollect;
-
-export {DFcollect};
+window.DF_SDK_Collect = DF_SDK_Collect;
