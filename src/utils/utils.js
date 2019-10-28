@@ -121,7 +121,11 @@ utils.changeJSON2Query =  function (jsonObj) {
         if (args != '') {
             args += '&';
         }
-        args += i + '=' + encodeURIComponent(jsonObj[i]);
+        if(Object.prototype.toString.call(jsonObj[i]) === '[object Object]'){
+            args += i + '=' + JSON.stringify(jsonObj[i]);
+        }else{
+            args += i + '=' + encodeURIComponent(jsonObj[i]);
+        }
     }
     return args;
 };
@@ -210,7 +214,6 @@ utils.cookie = {
         }
         // text += "; path=/; domain=.dongfangfuli.com";
         text += `; path=/; domain=.${location.hostname}`;
-        debugger
         document.cookie = name + "=" + text;
     },
     getItem: function(name) {
