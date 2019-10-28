@@ -23,8 +23,9 @@
             e.stopPropagation();
             dfsite.DFcollect.dispatch('click',dispatchDOM,{extraInfo:'extraInfo'})
         }
-        var dfCollect = new DF_SDK_Collect()
-        dfCollect.pageVisit()
+        var dfCollect = new DF_SDK_Collect({sendUrl: 'http://www.baidu.com',commonUpData:{plantform:'zs'}})
+        console.log(dfCollect)
+        dfCollect.pageVisit({mall_userId:'1111'})
     </script>
 </body>
 </html>

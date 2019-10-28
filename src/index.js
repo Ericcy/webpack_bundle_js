@@ -1,9 +1,13 @@
 import { utils } from './utils/utils'
 import { clickHandler } from './module/clickHandler'
 import { dispatch } from './module/dispatch'
-import { mySend } from './module/send'
+import { sendLog } from './module/send'
 import { TYPE } from './utils/type'
 
+/**
+ * 实例化的时候可以改变上报的地址和其他参数默认值
+ * new DF_SDK_Collect({sendUrl: 'url地址', ...}) 注意：URL地址为全地址
+ */
 class DF_SDK_Collect {
     constructor(obj){
         this.version = '1.0.0';
@@ -65,9 +69,16 @@ class DF_SDK_Collect {
      * - extraData
      */
     pageVisit(extraObj){
-        this._extraData(extraObj)
-        this.commonUpData.eventType = TYPE.PV;
-        mySend(this.sendUrl,this.commonUpData);
+        let resObj = {};
+        if(extraObj&&Object.prototype.toString.call(extraObj) === '[object Object]'){
+            Object.assign(resObj,this.commonUpData,extraObj)
+            resObj.eventType = TYPE.PV;
+            sendLog(this.sendUrl,resObj);
+        }else{
+            Object.assign(resObj,this.commonUpData,extraObj)
+            resObj.eventType = TYPE.PV;
+            sendLog(this.sendUrl,resObj);
+        }
     }
 }
 
