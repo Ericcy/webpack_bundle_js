@@ -212,8 +212,7 @@ utils.cookie = {
                 text += "; expires=" + date.toUTCString();
             }
         }
-        // text += "; path=/; domain=.dongfangfuli.com";
-        text += `; path=/; domain=.${location.hostname}`;
+        text += "; path=/; domain=.dongfangfuli.com";
         document.cookie = name + "=" + text;
     },
     getItem: function(name) {
