@@ -208,7 +208,9 @@ utils.cookie = {
                 text += "; expires=" + date.toUTCString();
             }
         }
-        text += "; path=/; domain=.dongfangfuli.com";
+        // text += "; path=/; domain=.dongfangfuli.com";
+        text += `; path=/; domain=.${location.hostname}`;
+        debugger
         document.cookie = name + "=" + text;
     },
     getItem: function(name) {

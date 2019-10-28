@@ -13,7 +13,7 @@ class DF_SDK_Collect {
         this.sendUrl = 'http://localhost:8088';
         this.commonUpData = {
             userId: utils.cookie.getItem('mall_userId') || '',      // 用户id
-            sessionId: utils.uuid(),                                     // 设备号
+            sessionId: utils.cookie.getItem('sessionId') || '',                                     // 设备号
             plantform: '',                                               // 平台
             pageUrl: location.href,                                      // 当前页面地址
             pageName: document.title || '',                              // 当前页面的标题
@@ -25,8 +25,12 @@ class DF_SDK_Collect {
         }
         // 初始化的时候重置参数
         this._extraData(obj)
+        
+        // 生成唯一的设备id
+        this._createSessionId()
+        
     }
-
+    // 作对象合并
     _addNewData(oldObj,newObj,key){
         if(Object.prototype.toString.call(newObj[key]) === '[object String]'){
             oldObj[key] = newObj[key]
@@ -50,15 +54,26 @@ class DF_SDK_Collect {
             }
         }
     }
-   
+
+    // 生成唯一的设备号存
+    _createSessionId(){
+        if(!utils.cookie.getItem('sessionId')){
+            var sessionId = utils.uuid();
+            this.commonUpData.sessionId = sessionId;
+            utils.cookie.setItem('sessionId', sessionId, 30) 
+        }
+    }
+
     /**
+     * PV事件
+     * @method pageVisit
      * @param {Object} extraObj 需要额外上报的数据
      * 一般包括：
-     * - mall_userId
-     * - sessionId
-     * - plantform
-     * - pageFrom
-     * - extraInfo
+     * @param {String} - userId
+     * @param {String} - sessionId
+     * @param {String} - plantform
+     * @param {String} - pageFrom
+     * @param {Object || null} - extraInfo
      */
     pageVisit(extraObj){
         let resObj = {};
