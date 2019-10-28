@@ -1,6 +1,4 @@
 import { utils } from './utils/utils'
-import { clickHandler } from './module/clickHandler'
-import { dispatch } from './module/dispatch'
 import { sendLog } from './module/send'
 import { TYPE } from './utils/type'
 
@@ -14,7 +12,7 @@ class DF_SDK_Collect {
         console.log('埋点的版本号：' + this.version);
         this.sendUrl = 'http://localhost:8088';
         this.commonUpData = {
-            mall_userId: utils.cookie.getItem('mall_userId') || '',      // 用户id
+            userId: utils.cookie.getItem('mall_userId') || '',      // 用户id
             sessionId: utils.uuid(),                                     // 设备号
             plantform: '',                                               // 平台
             pageUrl: location.href,                                      // 当前页面地址
@@ -23,16 +21,10 @@ class DF_SDK_Collect {
             eventType: '',                                               // 事件类型
             currentTime: new Date().getTime(),                           // 当前时间
             //leaveTime: 0,                                                // 离开页面的时间
-            extraData: null                                              // 扩展参数
+            extraInfo: null                                              // 扩展参数
         }
         // 初始化的时候重置参数
         this._extraData(obj)
-        //自定义事件初始化
-        this.dispatch = dispatch;
-        
-        //点击事件初始化
-        utils.on(document.body, 'click', clickHandler);
-        
     }
 
     _addNewData(oldObj,newObj,key){
@@ -66,7 +58,7 @@ class DF_SDK_Collect {
      * - sessionId
      * - plantform
      * - pageFrom
-     * - extraData
+     * - extraInfo
      */
     pageVisit(extraObj){
         let resObj = {};
@@ -79,6 +71,20 @@ class DF_SDK_Collect {
             resObj.eventType = TYPE.PV;
             sendLog(this.sendUrl,resObj);
         }
+    }
+
+    /**
+     * 点击回调事件
+     * @method clickHandler (obj)                 
+     * @param {String} pageChannel     页面频道
+     * @param {String} pagePosition    当前位置    
+     * @param {String} currentTarget   当前标签
+     * @param {String} eventType       事件类型
+     * @param {Object} extraInfo       额外信息
+     */
+    clickHandler(obj){
+        obj = Object.assign(this.commonUpData, obj);
+        sendLog(this.sendUrl, obj);
     }
 }
 

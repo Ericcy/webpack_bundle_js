@@ -7,9 +7,8 @@
     <title>埋点测试页</title>
 </head>
 <body>
-    <h1 collect-data='{"type": "index_hd_h1", "desc": "点击h1标题"}' >clickid</h1>
-    <h1 collect-data="{}">哈哈哈哈哈</h1>
-    <h1 id="dispatchid">dispatchid</h1>
+    <h1 id="clickDom">哈哈哈哈哈</h1>
+    <h1>dispatchid</h1>
     <p>--------------------------------------------</p>
     <a href="demo1.html">demo1</a>
     <div class="login">
@@ -18,14 +17,20 @@
     </div>
     <script src="./dfsta.js"></script>
     <script>
-        var dispatchDOM = document.getElementById('dispatchid');
-        dispatchDOM.onclick = function (e) {
-            e.stopPropagation();
-            dfsite.DFcollect.dispatch('click',dispatchDOM,{extraInfo:'extraInfo'})
+        var clickDom = document.getElementById('clickDom');
+        var dfCollect = new DF_SDK_Collect({sendUrl: 'http://www.baidu.com',commonUpData:{plantform:'zs'}});
+        console.log(dfCollect);
+        dfCollect.pageVisit({mall_userId:'1111'});
+        clickDom.onclick = function(){
+            let obj = {
+                'pageChannel': '',
+                'extraInfo': {
+                    'name': '王老吉',
+                    'age': 14
+                }
+            }
+            dfCollect.clickHandler(obj)
         }
-        var dfCollect = new DF_SDK_Collect({sendUrl: 'http://www.baidu.com',commonUpData:{plantform:'zs'}})
-        console.log(dfCollect)
-        dfCollect.pageVisit({mall_userId:'1111'})
     </script>
 </body>
 </html>
