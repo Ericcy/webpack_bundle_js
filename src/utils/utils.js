@@ -122,7 +122,7 @@ utils.changeJSON2Query =  function (jsonObj) {
             args += '&';
         }
         if(Object.prototype.toString.call(jsonObj[i]) === '[object Object]'){
-            args += i + '=' + JSON.stringify(jsonObj[i]);
+            args += i + '=' + encodeURIComponent(JSON.stringify(jsonObj[i]));
         }else{
             args += i + '=' + encodeURIComponent(jsonObj[i]);
         }

@@ -10,31 +10,25 @@ class DF_SDK_Collect {
     constructor(obj){
         this.version = '1.0.0';
         console.log('埋点的版本号：' + this.version);
-        this.sendUrl = 'http://localhost:8088';
+        this.sendUrl = 'http://static.dongfangfuli.com';
         this.commonUpData = {
             userId: utils.cookie.getItem('mall_userId') || '',      // 用户id
             sessionId: utils.cookie.getItem('sessionId') || '',                                     // 设备号
-            plantform: '',                                               // 平台
+            plantform: '0',                                               // 平台
             pageUrl: location.href,                                      // 当前页面地址
             pageName: document.title || '',                              // 当前页面的标题
             pageFrom: document.referrer,                                 // 当前页面的来源
             eventType: '',                                               // 事件类型
             currentTime: new Date().getTime(),                           // 当前时间
             //leaveTime: 0,                                                // 离开页面的时间
-            extraInfo: null                                              // 扩展参数
-        };
-
+            extraInfo: ''                                                 // 扩展参数
+        }
         // 初始化的时候重置参数
         this._extraData(obj);
         
         // 生成唯一的设备id
         this._createSessionId();
 
-        //监听关闭页面时触发事件
-        this._beforeUnloadHandler();
-
-        //监听浏览器导航标签切换时触发事件
-        this._checkTabHandler();
     }
     
     // 作对象合并
@@ -71,31 +65,6 @@ class DF_SDK_Collect {
         }
     }
 
-    _beforeUnloadHandler(){
-        utils.on(window,'beforeunload', function(){
-            //页面关闭  closeTime
-            localStorage.setItem('closeTime', new Date())
-        })
-    }
-
-    _checkTabHandler(){
-        //PC
-        utils.on(document,'visibilitychange', function(){
-          if(document.hidden){
-              //页面隐藏  leaveTime
-              localStorage.setItem('leaveTime', new Date())
-            }else{ 
-              //页面显示  currentTime
-              localStorage.setItem('currentTime', new Date())
-            }
-        }) 
-        
-        //mobile
-        // document.addEventListener("qbrowserVisibilityChange", function(){
-          
-        // });
-    }
-
     /**
      * PV事件
      * @method pageVisit
@@ -112,12 +81,11 @@ class DF_SDK_Collect {
         if(extraObj&&Object.prototype.toString.call(extraObj) === '[object Object]'){
             Object.assign(resObj,this.commonUpData,extraObj)
             resObj.eventType = TYPE.PV;
-            sendLog(this.sendUrl,resObj);
         }else{
             Object.assign(resObj,this.commonUpData,extraObj)
             resObj.eventType = TYPE.PV;
-            sendLog(this.sendUrl,resObj);
         }
+        sendLog(this.sendUrl,resObj);
     }
 
     /**

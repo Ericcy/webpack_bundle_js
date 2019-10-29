@@ -12,7 +12,13 @@
     <script src="./dfsta.js"></script>
     <script>
         var dfCollect = new DF_SDK_Collect()
-        dfCollect.pageVisit()
+        dfCollect.pageVisit({
+            mall_userId:'1111',
+            extraInfo: {
+                name: 'pppppppp',
+                age: 14
+            }
+        })
     </script>
 </body>
 </html>
