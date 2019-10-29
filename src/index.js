@@ -20,7 +20,6 @@ class DF_SDK_Collect {
             pageFrom: document.referrer,                                 // 当前页面的来源
             eventType: '',                                               // 事件类型
             currentTime: new Date().getTime(),                           // 当前时间
-            //leaveTime: 0,                                                // 离开页面的时间
             extraInfo: ''                                                 // 扩展参数
         }
         // 初始化的时候重置参数
@@ -100,6 +99,25 @@ class DF_SDK_Collect {
     clickHandler(obj){
         obj = Object.assign(this.commonUpData, obj);
         sendLog(this.sendUrl, obj);
+    }
+
+
+    /**
+     * @method 定时上报pv来统计页面的访问时长;
+     * 
+     * 
+     * 
+     */
+    setIntervalPv(cb,cTime){
+        var interval = null;
+        cTime = cTime ? cTime : 10;
+        cb = cb ? cb : function(){};
+        if(interval){
+            clearInterval(interval);
+            interval = setInterval(cb, cTime);
+        }else{
+            interval = setInterval(cb, cTime);
+        }
     }
 
 }
