@@ -22,14 +22,21 @@ class DF_SDK_Collect {
             currentTime: new Date().getTime(),                           // 当前时间
             //leaveTime: 0,                                                // 离开页面的时间
             extraInfo: null                                              // 扩展参数
-        }
+        };
+
         // 初始化的时候重置参数
-        this._extraData(obj)
+        this._extraData(obj);
         
         // 生成唯一的设备id
-        this._createSessionId()
-        
+        this._createSessionId();
+
+        //监听关闭页面时触发事件
+        this._beforeUnloadHandler();
+
+        //监听浏览器导航标签切换时触发事件
+        this._checkTabHandler();
     }
+    
     // 作对象合并
     _addNewData(oldObj,newObj,key){
         if(Object.prototype.toString.call(newObj[key]) === '[object String]'){
@@ -64,6 +71,31 @@ class DF_SDK_Collect {
         }
     }
 
+    _beforeUnloadHandler(){
+        utils.on(window,'beforeunload', function(){
+            //页面关闭  closeTime
+            localStorage.setItem('closeTime', new Date())
+        })
+    }
+
+    _checkTabHandler(){
+        //PC
+        utils.on(document,'visibilitychange', function(){
+          if(document.hidden){
+              //页面隐藏  leaveTime
+              localStorage.setItem('leaveTime', new Date())
+            }else{ 
+              //页面显示  currentTime
+              localStorage.setItem('currentTime', new Date())
+            }
+        }) 
+        
+        //mobile
+        // document.addEventListener("qbrowserVisibilityChange", function(){
+          
+        // });
+    }
+
     /**
      * PV事件
      * @method pageVisit
@@ -89,7 +121,7 @@ class DF_SDK_Collect {
     }
 
     /**
-     * 点击回调事件
+     * click 点击事件
      * @method clickHandler (obj)                 
      * @param {String} pageChannel     页面频道
      * @param {String} pagePosition    当前位置    
@@ -101,7 +133,22 @@ class DF_SDK_Collect {
         obj = Object.assign(this.commonUpData, obj);
         sendLog(this.sendUrl, obj);
     }
+
 }
 
 
 window.DF_SDK_Collect = DF_SDK_Collect;
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -7,10 +7,7 @@
     <title>埋点测试页</title>
 </head>
 <body>
-    <h1 id="clickDom">哈哈哈哈哈</h1>
-    <h1 id="clickDom1">dfd</h1>
     <h1>dispatchid</h1>
-    <p>--------------------------------------------</p>
     <a href="demo1.html">demo1</a>
     <div class="login">
         <p>模拟登陆</p>
@@ -19,30 +16,18 @@
     <script src="./dfsta.js"></script>
     <script>
         var clickDom = document.getElementById('clickDom');
-        var clickDom1 = document.getElementById('clickDom1');
         var dfCollect = new DF_SDK_Collect({sendUrl: 'http://www.baidu.com',commonUpData:{plantform:'zs'}});
-        console.log(dfCollect);
-        dfCollect.pageVisit({mall_userId:'1111'});
-        clickDom.onclick = function(){
-            let obj = {
-                'pageChannel': '',
-                'extraInfo': {
-                    'name': '王老吉',
-                    'age': 14
-                }
-            }
-            dfCollect.clickHandler(obj)
-        }
-        clickDom1.onclick = function(){
-            let obj = {
-                'pageChannel': '',
-                'extraInfo': {
-                    'type': 'llllll',
-                    'age': 10
-                }
-            }
-            dfCollect.clickHandler(obj)
-        }
+        dfCollect.pageVisit({userId:'1111'});
+        // clickDom.onclick = function(){
+        //     let obj = {
+        //         'pageChannel': '',
+        //         'extraInfo': {
+        //             'name': '王老吉',
+        //             'age': 14
+        //         }
+        //     }
+        //     dfCollect.clickHandler(obj)
+        // }
     </script>
 </body>
 </html>
