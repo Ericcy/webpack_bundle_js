@@ -7,7 +7,7 @@
     <title>埋点测试页</title>
 </head>
 <body>
-    <h1>dispatchid</h1>
+    <h1>dispatchid<em>哈哈哈哈哈哈</em></h1>
     <a href="demo1.html">demo1</a>
     <div class="login">
         <p>模拟登陆</p>
@@ -15,19 +15,44 @@
     </div>
     <script src="./dfsta.js"></script>
     <script>
-        var clickDom = document.getElementById('clickDom');
+
+
         var dfCollect = new DF_SDK_Collect({sendUrl: 'http://www.baidu.com',commonUpData:{plantform:'zs'}});
-        dfCollect.pageVisit({userId:'1111'});
-        // clickDom.onclick = function(){
-        //     let obj = {
-        //         'pageChannel': '',
-        //         'extraInfo': {
-        //             'name': '王老吉',
-        //             'age': 14
-        //         }
-        //     }
-        //     dfCollect.clickHandler(obj)
-        // }
+
+        //初始化上报
+        dfCollect.upPv = function(){
+            dfCollect.pageVisit();
+        }
+        //定时上报
+        dfCollect.timeUpHandle = function(){
+            var that = this;
+            var up = window.setInterval(that.upPv, 3000);
+            document.addEventListener('visibilitychange', function(){
+                if(document.hidden){
+                    window.clearInterval(up);
+                }else{
+                    up = window.setInterval(that.upPv, 3000);
+                }
+            })
+        }
+        //点击上报
+        dfCollect.clickUpHander = function(){
+            var that = this;
+            window.addEventListener('click', function(e){
+                that.clickHandler({
+                    eventType: 'click'
+                });
+            }, false)
+        }
+        //初始化方法
+        dfCollect.init = function(){
+            this.upPv();
+            this.timeUpHandle();
+            this.clickUpHander('click');
+        }
+
+        dfCollect.init();
+
     </script>
 </body>
 </html>
