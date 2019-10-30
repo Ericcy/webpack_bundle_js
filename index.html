@@ -7,34 +7,20 @@
     <title>埋点测试页</title>
 </head>
 <body>
-    <h1>dispatchid<em>哈哈哈哈哈哈</em></h1>
+    <h1 >dispatchid<em>哈哈哈哈哈哈</em></h1>
     <a href="demo1.html">demo1</a>
-    <div class="login">
-        <p>模拟登陆</p>
-        <button id="login">登陆</button>
+    <div class="login"  >
+        <p data-dffl="pArea">模拟登陆</p>
+        <button id="login" onclick="dfCollect.dispatch(this)">登陆</button>
     </div>
     <script src="./dfsta.js"></script>
     <script>
-        var clickDom = document.getElementById('clickDom');
         var dfCollect = new DF_SDK_Collect({sendUrl: 'http://www.baidu.com',commonUpData:{plantform:'zs'}});
-        dfCollect.pageVisit({userId:'2222'});
+        // dfCollect.pageVisit({userId:'2222'});
         // 不需要传参数的情况
         // dfCollect.setIntervalPv(dfCollect.pageVisit,1000);
         // 需要传参数的情况
-        dfCollect.setIntervalPv(()=>{dfCollect.pageVisit({userId:'1111'})},1000);
-
-        //点击上报
-        var clickUpHander = function () {
-            window.addEventListener('click', function (e) {
-                dfCollect.clickHandler({
-                    eventType: 'click'
-                });
-            }, false)
-        }
-        clickUpHander()
-
-
-
+        // dfCollect.setIntervalPv(()=>{dfCollect.pageVisit({userId:'1111'})},1000);
 
         //初始化上报
         dfCollect.upPv = function(){
@@ -43,24 +29,56 @@
         //定时上报
         dfCollect.timeUpHandle = function(){
             var that = this;
-            var up = window.setInterval(that.upPv, 3000);
-            document.addEventListener('visibilitychange', function(){
-                if(document.hidden){
-                    window.clearInterval(up);
-                }else{
-                    up = window.setInterval(that.upPv, 3000);
+            that.setIntervalPv(that.upPv, 3000)
+        }
+        //点击上报
+        dfCollect.clickFn = function () {
+            var that = this;
+            window.addEventListener('click', function (e) {
+                var currentTarget = e.target.nodeName;
+                var pagePosition = e.target.getAttribute('data-dffl')||'';
+                if(pagePosition){   //如果有data-dffl属性，就去上报
+                    that.clickHandler({
+                        eventType: 'click',
+                        pageChannel: '生日汇',
+                        currentTarget: currentTarget,
+                        pagePosition: pagePosition,
+                        extraInfo: null
+                    })
+                }
+            }, false)
+        }
+        //自定义上报
+        dfCollect.dispatch = function(e){
+            var that = this;
+            var currentTarget = e.nodeName;
+            var pagePosition = 'btnArea'
+            that.clickHandler({
+                eventType: 'click',
+                pageChannel: '生日汇',
+                currentTarget: currentTarget,
+                pagePosition: pagePosition,
+                extraInfo: {
+                    name: 'login'
                 }
             })
         }
-        
         //初始化方法
         dfCollect.init = function(){
             this.upPv();
             this.timeUpHandle();
-            this.clickUpHander('click');
+            this.clickFn();
         }
 
-        // dfCollect.init();
+        dfCollect.init();
+
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
