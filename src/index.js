@@ -10,7 +10,7 @@ class DF_SDK_Collect {
     constructor(obj){
         this.version = '1.0.0';
         console.log('埋点的版本号：' + this.version);
-        this.project = '';
+        this.project = ''; // 参数列表：VUE, REACT
         this.router = null; // 只有SPA的情况下才有router对象
         this.sendUrl = 'http://static.dongfangfuli.com';
         this.commonUpData = {
@@ -110,15 +110,12 @@ class DF_SDK_Collect {
 
 
     /**
-     * @method 定时上报pv来统计页面的访问时长;
-     * 
-     * 
-     * 
+     * @method setIntervalPv 定时上报pv来统计页面的访问时长;
+     * @param cb 回掉函数
+     * @param cTime 频次
      */
-    setIntervalPv(cb,cTime){
-        cTime = cTime ? cTime : 10;
-        cb = cb ? cb : function(){};
-        if(this.project === 'SPA'){ // 是单页面
+    _setIntervalPv(cb,cTime){
+        if(this.project === 'VUE'){ // 是vue单页面
             if(this.router){
                 this.router.beforeEach((to, from, next) => {
                     console.log(this)
@@ -145,6 +142,18 @@ class DF_SDK_Collect {
                 cb.bind(this)()
             }, cTime);
         }
+    }
+    setIntervalPv(cb,cTime){
+        cTime = cTime ? cTime : 10000;
+        cb = cb ? cb : function(){};
+        this._setIntervalPv(cb,cTime);
+        utils.showState((isVisible)=>{
+            if(isVisible === 'visible'){
+                this._setIntervalPv(cb,cTime)
+            }else{
+                clearInterval(this.intervalInstantiate);
+            }
+        })
     }
 
 }

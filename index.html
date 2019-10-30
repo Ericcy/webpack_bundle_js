@@ -16,16 +16,27 @@
     <script src="./dfsta.js"></script>
     <script>
         var clickDom = document.getElementById('clickDom');
-        var dfCollect = new DF_SDK_Collect({project: 'SPA',sendUrl: 'http://www.baidu.com',commonUpData:{plantform:'zs'}});
+        var dfCollect = new DF_SDK_Collect({sendUrl: 'http://www.baidu.com',commonUpData:{plantform:'zs'}});
         dfCollect.pageVisit({userId:'2222'});
         // 不需要传参数的情况
         // dfCollect.setIntervalPv(dfCollect.pageVisit,1000);
         // 需要传参数的情况
-        dfCollect.setIntervalPv(
-            ()=>{dfCollect.pageVisit({userId:'1111'})}
-            ,1000);
+        dfCollect.setIntervalPv(()=>{dfCollect.pageVisit({userId:'1111'})},1000);
 
-            //初始化上报
+        //点击上报
+        var clickUpHander = function () {
+            window.addEventListener('click', function (e) {
+                dfCollect.clickHandler({
+                    eventType: 'click'
+                });
+            }, false)
+        }
+        clickUpHander()
+
+
+
+
+        //初始化上报
         dfCollect.upPv = function(){
             dfCollect.pageVisit();
         }
@@ -41,15 +52,7 @@
                 }
             })
         }
-        //点击上报
-        dfCollect.clickUpHander = function(){
-            var that = this;
-            window.addEventListener('click', function(e){
-                that.clickHandler({
-                    eventType: 'click'
-                });
-            }, false)
-        }
+        
         //初始化方法
         dfCollect.init = function(){
             this.upPv();
@@ -57,7 +60,7 @@
             this.clickUpHander('click');
         }
 
-        dfCollect.init();
+        // dfCollect.init();
     </script>
 </body>
 </html>

@@ -191,9 +191,9 @@ utils.showState = function(cb){
         var evtname = isHidden.replace(/[H|h]idden/, '') + 'visibilitychange';
         utils.on(document,evtname, function () {
         //   document.title = document[getVisibilityState()]+"状态";
-            if(document[getVisibilityState()] === 'visible'){
-               cb&&cb()
-            }
+            // if(document[getVisibilityState()] === 'visible'){
+               cb&&cb(document[getVisibilityState()])
+            // }
         }, false);
     }
 }
