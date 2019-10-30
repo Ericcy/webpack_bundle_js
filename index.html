@@ -15,11 +15,17 @@
     </div>
     <script src="./dfsta.js"></script>
     <script>
+        var clickDom = document.getElementById('clickDom');
+        var dfCollect = new DF_SDK_Collect({project: 'SPA',sendUrl: 'http://www.baidu.com',commonUpData:{plantform:'zs'}});
+        dfCollect.pageVisit({userId:'2222'});
+        // 不需要传参数的情况
+        // dfCollect.setIntervalPv(dfCollect.pageVisit,1000);
+        // 需要传参数的情况
+        dfCollect.setIntervalPv(
+            ()=>{dfCollect.pageVisit({userId:'1111'})}
+            ,1000);
 
-
-        var dfCollect = new DF_SDK_Collect({sendUrl: 'http://www.baidu.com',commonUpData:{plantform:'zs'}});
-
-        //初始化上报
+            //初始化上报
         dfCollect.upPv = function(){
             dfCollect.pageVisit();
         }
@@ -52,7 +58,6 @@
         }
 
         dfCollect.init();
-
     </script>
 </body>
 </html>

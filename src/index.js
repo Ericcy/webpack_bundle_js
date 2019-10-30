@@ -10,6 +10,8 @@ class DF_SDK_Collect {
     constructor(obj){
         this.version = '1.0.0';
         console.log('埋点的版本号：' + this.version);
+        this.project = '';
+        this.router = null; // 只有SPA的情况下才有router对象
         this.sendUrl = 'http://static.dongfangfuli.com';
         this.commonUpData = {
             userId: utils.cookie.getItem('mall_userId') || '',      // 用户id
@@ -22,6 +24,7 @@ class DF_SDK_Collect {
             currentTime: new Date().getTime(),                           // 当前时间
             extraInfo: ''                                                 // 扩展参数
         }
+        this.intervalInstantiate = null // 定时器的实例
         // 初始化的时候重置参数
         this._extraData(obj);
         
@@ -47,10 +50,14 @@ class DF_SDK_Collect {
     _extraData(obj){
         var that = this;
         for(let item in obj){
-            if(that.hasOwnProperty(item)){
-                this._addNewData(that,obj,item)
+            if(Object.prototype.toString.call(obj[item].constructor.prototype.addRoutes) === '[object Function]'){
+                that[item] = obj[item]
             }else{
-                this._addNewData(that,obj,item)
+                if(that.hasOwnProperty(item)){
+                    this._addNewData(that,obj,item)
+                }else{
+                    this._addNewData(that,obj,item)
+                }
             }
         }
     }
@@ -109,14 +116,34 @@ class DF_SDK_Collect {
      * 
      */
     setIntervalPv(cb,cTime){
-        var interval = null;
         cTime = cTime ? cTime : 10;
         cb = cb ? cb : function(){};
-        if(interval){
-            clearInterval(interval);
-            interval = setInterval(cb, cTime);
+        if(this.project === 'SPA'){ // 是单页面
+            if(this.router){
+                this.router.beforeEach((to, from, next) => {
+                    console.log(this)
+                    if(this.intervalInstantiate){
+                        console.log('hhhhhh')
+                        clearInterval(this.intervalInstantiate);
+                        this.intervalInstantiate = setInterval(()=>{
+                            cb.bind(this)()
+                        }, cTime);
+                    }else{
+                        console.log('ppppp')
+                        this.intervalInstantiate = setInterval(()=>{
+                            cb.bind(this)()
+                        }, cTime);
+                    }
+                    next()
+                })
+            }else{
+                console.log('你好像忘记传路由对象了')
+            }
+           
         }else{
-            interval = setInterval(cb, cTime);
+            this.intervalInstantiate = setInterval(()=>{
+                cb.bind(this)()
+            }, cTime);
         }
     }
 
