@@ -9,7 +9,7 @@ module.exports = {
   output: {
     // publicPath: __dirname + "/dist/",
     path: path.resolve(__dirname, "dist"),
-    filename: "dfsta.js"
+    filename: "DFCollectSDK.js"
   },
   module: {
     rules: [

@@ -6,7 +6,7 @@ import { TYPE } from './utils/type'
  * 实例化的时候可以改变上报的地址和其他参数默认值
  * new DF_SDK_Collect({sendUrl: 'url地址', ...}) 注意：URL地址为全地址
  */
-class DF_SDK_Collect {
+class DFCollectSDK {
     constructor(obj){
         this.version = '1.0.0';
         console.log('埋点的版本号：' + this.version);
@@ -14,10 +14,10 @@ class DF_SDK_Collect {
         this.commonUpData = {
             userId: utils.cookie.getItem('mall_userId') || '',          // 用户id
             sessionId: utils.cookie.getItem('sessionId') || '',         // 设备号
-            plantform: '0',                                             // 平台
+            plantform: utils.plantform() || '0',                           // 平台
             pageUrl: location.href,                                     // 当前页面地址
             pageName: document.title || '',                             // 当前页面的标题
-            pageFrom: document.referrer,                                // 当前页面的来源
+            pageFrom: document.referrer || utils.storage.getFromSession('from') || '',     // 当前页面的来源
             eventType: '',                                              // 事件类型
             currentTime: new Date().getTime(),                          // 当前时间
             extraInfo: ''                                               // 扩展参数
@@ -117,14 +117,11 @@ class DF_SDK_Collect {
      */
     pageVisit(extraObj){
         let resObj = {};
-        if(extraObj&&Object.prototype.toString.call(extraObj) === '[object Object]'){
-            Object.assign(resObj,this.commonUpData,extraObj)
-            resObj.eventType = TYPE.PV;
-        }else{
-            Object.assign(resObj,this.commonUpData,extraObj)
-            resObj.eventType = TYPE.PV;
-        }
+        if(extraObj&&Object.prototype.toString.call(extraObj) != '[object Object]'){return}
+        Object.assign(resObj,this.commonUpData,extraObj)
+        resObj.eventType = TYPE.PV;
         sendLog(this.sendUrl,resObj);
+
     }
 
     /**
@@ -147,6 +144,7 @@ class DF_SDK_Collect {
      * @param {Number} cTime    时间
      */
     setIntervalPv(cTime){
+        utils.storage.set2Session('from', location.href);
         var that = this;
         //时间容错
         if(typeof cTime !== 'number' || isNaN(cTime) || cTime < 1000 ) return;
@@ -162,9 +160,11 @@ class DF_SDK_Collect {
         })
         //spa页面路由变化时
         window.addEventListener('replaceState', function(e) {
+            utils.storage.set2Session('from', location.href);
             that._setInterval(cTime);
         });
         window.addEventListener('pushState', function(e) {
+            utils.storage.set2Session('from', location.href);
             that._setInterval(cTime);
         });
     }
@@ -173,7 +173,7 @@ class DF_SDK_Collect {
 }
 
 
-window.DF_SDK_Collect = DF_SDK_Collect;
+window.DFCollectSDK = DFCollectSDK;
 
 
 

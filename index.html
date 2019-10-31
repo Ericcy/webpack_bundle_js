@@ -13,11 +13,11 @@
         <p data-dffl="pArea">模拟登陆</p>
         <button id="login" onclick="dfCollect.dispatch(this)">登陆</button>
     </div>
-    <script src="./dfsta.js"></script>
+    <script src="./DFCollectSDK.js"></script>
     <script>
-        var dfCollect = new DF_SDK_Collect({
+        var dfCollect = new DFCollectSDK({
             dsendUrl: 'http://www.baidu.com',
-            commonUpData:{plantform:'zs'}
+            commonUpData:{}
         })
 
         dfCollect.setIntervalPv(2000);
