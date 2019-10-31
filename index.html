@@ -15,62 +15,53 @@
     </div>
     <script src="./dfsta.js"></script>
     <script>
-        var dfCollect = new DF_SDK_Collect({sendUrl: 'http://www.baidu.com',commonUpData:{plantform:'zs'}});
-        // dfCollect.pageVisit({userId:'2222'});
-        // 不需要传参数的情况
-        // dfCollect.setIntervalPv(dfCollect.pageVisit,1000);
-        // 需要传参数的情况
-        // dfCollect.setIntervalPv(()=>{dfCollect.pageVisit({userId:'1111'})},1000);
+        var dfCollect = new DF_SDK_Collect({
+            dsendUrl: 'http://www.baidu.com',
+            commonUpData:{plantform:'zs'}
+        })
 
-        //初始化上报
-        dfCollect.upPv = function(){
-            dfCollect.pageVisit();
-        }
-        //定时上报
-        dfCollect.timeUpHandle = function(){
-            var that = this;
-            that.setIntervalPv(that.upPv, 3000)
-        }
-        //点击上报
-        dfCollect.clickFn = function () {
-            var that = this;
-            window.addEventListener('click', function (e) {
-                var currentTarget = e.target.nodeName;
-                var pagePosition = e.target.getAttribute('data-dffl')||'';
-                if(pagePosition){   //如果有data-dffl属性，就去上报
-                    that.clickHandler({
-                        eventType: 'click',
-                        pageChannel: '生日汇',
-                        currentTarget: currentTarget,
-                        pagePosition: pagePosition,
-                        extraInfo: null
-                    })
-                }
-            }, false)
-        }
-        //自定义上报
-        dfCollect.dispatch = function(e){
-            var that = this;
-            var currentTarget = e.nodeName;
-            var pagePosition = 'btnArea'
-            that.clickHandler({
-                eventType: 'click',
-                pageChannel: '生日汇',
-                currentTarget: currentTarget,
-                pagePosition: pagePosition,
-                extraInfo: {
-                    name: 'login'
-                }
-            })
-        }
-        //初始化方法
-        dfCollect.init = function(){
-            this.upPv();
-            this.timeUpHandle();
-            this.clickFn();
-        }
+        dfCollect.setIntervalPv(2000);
 
-        dfCollect.init();
+        // //点击自动上报
+        // dfCollect.clickFn = function () {
+        //     var that = this;
+        //     window.addEventListener('click', function (e) {
+        //         var currentTarget = e.target.nodeName;
+        //         var pagePosition = e.target.getAttribute('data-dffl')||'';
+        //         if(pagePosition){   //如果有data-dffl属性，就去上报
+        //             that.clickHandler({
+        //                 eventType: 'click',
+        //                 pageChannel: '生日汇',
+        //                 currentTarget: currentTarget,
+        //                 pagePosition: pagePosition,
+        //                 extraInfo: null
+        //             })
+        //         }
+        //     }, false)
+        // }
+
+        // //自定义上报
+        // dfCollect.dispatch = function(e){
+        //     var that = this;
+        //     var currentTarget = e.nodeName;
+        //     var pagePosition = 'btnArea'
+        //     that.clickHandler({
+        //         eventType: 'click',
+        //         pageChannel: '生日汇',
+        //         currentTarget: currentTarget,
+        //         pagePosition: pagePosition,
+        //         extraInfo: {
+        //             name: 'login'
+        //         }
+        //     })
+        // }
+        // //初始化方法
+        // dfCollect.init = function(){
+        //     this.setIntervalPv(2000);
+        //     // this.clickFn();
+        // }
+
+        // dfCollect.init();
 
     </script>
 </body>
