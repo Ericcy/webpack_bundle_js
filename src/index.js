@@ -17,7 +17,7 @@ class DFCollectSDK {
             plantform: utils.plantform() || '0',                           // 平台
             pageUrl: location.href,                                     // 当前页面地址
             pageName: document.title || '',                             // 当前页面的标题
-            pageFrom: document.referrer || utils.storage.getFromSession('from') || '',     // 当前页面的来源
+            pageFrom: document.referrer || utils.storage.getFromSession('pageFrom') || '',     // 当前页面的来源
             eventType: '',                                              // 事件类型
             currentTime: new Date().getTime(),                          // 当前时间
             extraInfo: ''                                               // 扩展参数
@@ -145,7 +145,7 @@ class DFCollectSDK {
      */
     setIntervalPv(cTime){
         let preUrl = '';
-        utils.storage.set2Session('from', location.href);
+        utils.storage.set2Session('pageFrom', location.href);
         var that = this;
         //时间容错
         if(typeof cTime !== 'number' || isNaN(cTime) || cTime < 1000 ) return;
@@ -161,14 +161,13 @@ class DFCollectSDK {
         })
         //spa页面路由变化时
         window.addEventListener('replaceState', function(e) {
-            preUrl = utils.storage.getFromSession('from');
-            utils.storage.set2Session('from', location.href);
+            preUrl = utils.storage.getFromSession('pageFrom');
+            utils.storage.set2Session('pageFrom', location.href);
             that._setInterval(cTime,{pageFrom: preUrl,pageUrl: location.href});
         });
         window.addEventListener('pushState', function(e) {
-            console.log(history,'history')
-            preUrl = utils.storage.getFromSession('from');
-            utils.storage.set2Session('from', location.href);
+            preUrl = utils.storage.getFromSession('pageFrom');
+            utils.storage.set2Session('pageFrom', location.href);
             that._setInterval(cTime,{pageFrom: preUrl,pageUrl: location.href});
         });
     }
