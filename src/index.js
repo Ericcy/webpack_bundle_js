@@ -174,17 +174,3 @@ class DFCollectSDK {
 
 
 window.DFCollectSDK = DFCollectSDK;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
