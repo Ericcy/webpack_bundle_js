@@ -10,7 +10,7 @@ class DFCollectSDK {
     constructor(obj){
         this.version = '1.0.0';
         console.log('埋点的版本号：' + this.version);
-        this.sendUrl = 'http://static.dongfangfuli.com';
+        this.sendUrl = 'http://10.10.5.65/tracker/add';
         this.commonUpData = {
             userId: utils.cookie.getItem('mall_userId') || '',          // 用户id
             sessionId: utils.cookie.getItem('sessionId') || '',         // 设备号
@@ -18,6 +18,7 @@ class DFCollectSDK {
             pageUrl: location.href,                                     // 当前页面地址
             pageName: document.title || '',                             // 当前页面的标题
             pageFrom: document.referrer || utils.storage.getFromSession('pageFrom') || '',     // 当前页面的来源
+            pageToken: utils.uuid() || '',                              // 用来计算页面的停留时间
             eventType: '',                                              // 事件类型
             currentTime: new Date().getTime(),                          // 当前时间
             extraInfo: ''                                               // 扩展参数
@@ -161,11 +162,13 @@ class DFCollectSDK {
         })
         //spa页面路由变化时
         window.addEventListener('replaceState', function(e) {
+            that.commonUpData.pageToken = utils.uuid(); // 每次路由变化都要更改pageToken
             preUrl = utils.storage.getFromSession('pageFrom');
             utils.storage.set2Session('pageFrom', location.href);
             that._setInterval(cTime,{pageFrom: preUrl,pageUrl: location.href});
         });
         window.addEventListener('pushState', function(e) {
+            that.commonUpData.pageToken = utils.uuid(); // 每次路由变化都要更改pageToken
             preUrl = utils.storage.getFromSession('pageFrom');
             utils.storage.set2Session('pageFrom', location.href);
             that._setInterval(cTime,{pageFrom: preUrl,pageUrl: location.href});
