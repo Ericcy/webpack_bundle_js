@@ -5,16 +5,20 @@ import { TYPE } from './utils/type'
 /**
  * 实例化的时候可以改变上报的地址和其他参数默认值
  * new DF_SDK_Collect({sendUrl: 'url地址', ...}) 注意：URL地址为全地址
+ * 1. pageVisit 上报PV
+ * 2. setIntervalPv 定时上报 --- 计算停留时长
+ * 3. clickHandler 点击事件上报
  */
 class DFCollectSDK {
     constructor(obj){
         this.version = '1.0.0';
         console.log('埋点的版本号：' + this.version);
-        this.sendUrl = 'http://10.10.5.65/tracker/add';
+        this.sendUrl = 'http://10.10.5.65/tracker/add';       // 数据上报接口
+        this.heartBeatUrl = '';                               // 心跳接口-----用来计算页面的停留时间
         this.commonUpData = {
             userId: utils.cookie.getItem('mall_userId') || '',          // 用户id
             sessionId: utils.cookie.getItem('sessionId') || '',         // 设备号
-            plantform: utils.plantform() || '0',                           // 平台
+            plantform: utils.plantform() || '0',                        // 平台
             pageUrl: location.href,                                     // 当前页面地址
             pageName: document.title || '',                             // 当前页面的标题
             pageFrom: document.referrer || utils.storage.getFromSession('pageFrom') || '',     // 当前页面的来源
@@ -95,9 +99,6 @@ class DFCollectSDK {
     //定时上报
     _setInterval(cTime,obj){
         var that = this;
-        // if(!obj){
-        //     obj = {}
-        // }
         that.pageVisit(obj);
         clearInterval(that.intervalInstantiate);
         that.intervalInstantiate = setInterval(()=>{
@@ -114,7 +115,7 @@ class DFCollectSDK {
      * @param {String} - sessionId
      * @param {String} - plantform
      * @param {String} - pageFrom
-     * @param {Object || null} - extraInfo
+     * @param {String} - extraInfo
      */
     pageVisit(extraObj){
         let resObj = {};
@@ -132,7 +133,7 @@ class DFCollectSDK {
      * @param {String} pagePosition    当前位置    
      * @param {String} currentTarget   当前标签
      * @param {String} eventType       事件类型
-     * @param {Object} extraInfo       额外信息
+     * @param {String} extraInfo       额外信息
      */
     clickHandler(obj){
         if(obj&&Object.prototype.toString.call(obj) != '[object Object]') return;
