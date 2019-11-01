@@ -7,10 +7,9 @@
     <title>埋点测试页</title>
 </head>
 <body>
-    <h1 df-stat='{"pageChannel":"我的","pagePosition":"header","pageName":"个人中心"}'>dispatch</h1>
-    <a href="demo1.html" target="_blank">demo1</a>
+    <h1 tracker-channel="我的" tracker-position="header" tracker-pname="列表">dispatch</h1>
     <div class="login"  >
-        <buttom>提交</button>
+        <buttom tracker-pname="提交">提交</button>
         <button onclick="login()">登陆</button>
     </div>
     <script src="./DFCollectSDK.js"></script>
@@ -21,7 +20,7 @@
         })
 
         function login(obj){
-            dfCollect.clickHandler({
+            dfCollect.dipatch({
                 pageChannel: 'movie',
                 pageName: '列表',
                 pagePosition: 'banner',

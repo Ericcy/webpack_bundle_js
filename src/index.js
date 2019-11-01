@@ -14,6 +14,7 @@ class DFCollectSDK {
         this.version = '1.0.0';
         console.log('埋点的版本号：' + this.version);
         this.sendUrl = 'http://10.10.5.65/tracker/add';       // 数据上报接口
+        this.heartBeatUrl = '';                               // 心跳接口-----用来计算页面的停留时间
         this.commonUpData = {
             userId: utils.cookie.getItem('mall_userId') || '',          // 用户id
             sessionId: utils.cookie.getItem('sessionId') || '',         // 设备号
@@ -39,7 +40,7 @@ class DFCollectSDK {
         //对象初始化时改写history
         this._pageListener();  
 
-        //声明式埋点初始化，'df-stat'
+        //声明式埋点初始化
         this._initClick();
 
     }
@@ -108,6 +109,22 @@ class DFCollectSDK {
         }, cTime);
     }
 
+    //获取买单标签属性
+    _getAttrByTreacker(e){
+        var obj = {};
+        obj.pageChannel = e.target.getAttribute('tracker-channel') || '';
+        obj.pageName = e.target.getAttribute('tracker-pname') || '';
+        obj.pagePosition = e.target.getAttribute('tracker-position') || '';
+        obj.extraInfo = e.target.getAttribute('tracker-extra') || '';
+        obj.currentTarget = e.target.nodeName;
+        obj.eventType = 'click';
+        if(obj.pageChannel || obj.pageName || obj.pagePosition || obj.extraInfo){
+            return obj;
+        }else{
+            return false;
+        }
+    }
+
     /**
      * 声明式埋点
      * @method _initClick
@@ -118,16 +135,8 @@ class DFCollectSDK {
     _initClick(){
         var that = this;
         window.addEventListener('click', function(e){
-            var isAttr = e.target.hasAttribute('df-stat');
-            var obj = JSON.parse(e.target.getAttribute('df-stat')) || null;
-            if(isAttr && obj){
-                obj.pageChannel = obj.pageChannel ? obj.pageChannel : '';
-                obj.pageName = obj.pageName ? obj.pageName : '';
-                // obj.pageUrl = location.href;
-                obj.pagePosition = obj.pagePosition ? obj.pagePosition : '';
-                obj.currentTarget = e.target.nodeName;
-                obj.eventType = 'click';
-                obj.extraInfo = '';
+            var obj = that._getAttrByTreacker(e);
+            if(obj){
                 obj = Object.assign(that.commonUpData, obj);
                 sendLog(that.sendUrl, obj);
             }
