@@ -135,7 +135,9 @@ class DFCollectSDK {
      * @param {Object} extraInfo       额外信息
      */
     clickHandler(obj){
-        obj = Object.assign(this.commonUpData, obj);
+        if(obj&&Object.prototype.toString.call(obj) != '[object Object]') return;
+        obj.extraInfo = obj.extraInfo ? JSON.stringify(obj.extraInfo) : '';
+        obj = Object.assign(this.commonUpData, obj)
         sendLog(this.sendUrl, obj);
     }
 
