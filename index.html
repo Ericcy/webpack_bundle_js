@@ -7,48 +7,28 @@
     <title>埋点测试页</title>
 </head>
 <body>
-    <h1 >dispatchid<em>哈哈哈哈哈哈</em></h1>
+    <h1 df-stat='{"pageChannel":"我的","pagePosition":"header","pageName":"个人中心"}'>dispatch</h1>
     <a href="demo1.html" target="_blank">demo1</a>
     <div class="login"  >
-        <p onclick="sub()">模拟登陆</p>
-        <button id="login" onclick="login()">登陆</button>
+        <buttom>提交</button>
+        <button onclick="login()">登陆</button>
     </div>
     <script src="./DFCollectSDK.js"></script>
     <script>
 
         var dfCollect = new DFCollectSDK({
-            // sendUrl: 'http://www.baidu.com',
             commonUpData:{}
         })
 
-
-        dfCollect.setIntervalPv(2000);
-
-
-        function login(){
+        function login(obj){
             dfCollect.clickHandler({
-                pageChannel: 'health',
-                pageName: '详情',
-                pageUrl: location.href,
-                pagePosition: 'header',
-                currentTarget: 'button',
-                eventType: 'login',
-                extraInfo: null
-            });
-        }
-
-
-        function sub(){
-            dfCollect.clickHandler({
-                pageChannel: 'health',
-                pageName: '',
-                pageUrl: location.href,
-                pagePosition: 'header',
-                currentTarget: 'button',
-                eventType: 'login',
+                pageChannel: 'movie',
+                pageName: '列表',
+                pagePosition: 'banner',
+                currentTarget: 'img',
+                eventType: 'click',
                 extraInfo: {
-                    name: 'LLF',
-                    age: '28'
+                    name: 'LLF'
                 }
             });
         }

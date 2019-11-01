@@ -40,6 +40,9 @@ class DFCollectSDK {
         //对象初始化时改写history
         this._pageListener();  
 
+        //声明式埋点初始化，'df-stat'
+        this._initClick();
+
     }
     
     // 作对象合并
@@ -107,6 +110,32 @@ class DFCollectSDK {
     }
 
     /**
+     * 声明式埋点
+     * @method _initClick
+     * @param {String}  页面频道(pageChannel)
+     * @param {String}  页面名称(pageName)    
+     * @param {String}  当前位置(pagePosition)
+    */
+    _initClick(){
+        var that = this;
+        window.addEventListener('click', function(e){
+            var isAttr = e.target.hasAttribute('df-stat');
+            var obj = JSON.parse(e.target.getAttribute('df-stat')) || null;
+            if(isAttr && obj){
+                obj.pageChannel = obj.pageChannel ? obj.pageChannel : '';
+                obj.pageName = obj.pageName ? obj.pageName : '';
+                // obj.pageUrl = location.href;
+                obj.pagePosition = obj.pagePosition ? obj.pagePosition : '';
+                obj.currentTarget = e.target.nodeName;
+                obj.eventType = 'click';
+                obj.extraInfo = '';
+                obj = Object.assign(that.commonUpData, obj);
+                sendLog(that.sendUrl, obj);
+            }
+        }, false);
+    }
+
+    /**
      * PV事件
      * @method pageVisit
      * @param {Object} extraObj 需要额外上报的数据
@@ -123,11 +152,10 @@ class DFCollectSDK {
         Object.assign(resObj,this.commonUpData,extraObj)
         resObj.eventType = TYPE.PV;
         sendLog(this.sendUrl,resObj);
-
     }
 
     /**
-     * 点击事件
+     * 自定义事件
      * @method clickHandler (obj)                 
      * @param {String} pageChannel     页面频道
      * @param {String} pagePosition    当前位置    
@@ -135,12 +163,13 @@ class DFCollectSDK {
      * @param {String} eventType       事件类型
      * @param {String} extraInfo       额外信息
      */
-    clickHandler(obj){
-        if(obj&&Object.prototype.toString.call(obj) != '[object Object]') return;
-        obj.extraInfo = obj.extraInfo ? JSON.stringify(obj.extraInfo) : '';
-        obj = Object.assign(this.commonUpData, obj)
+    dipatch(obj){
+        if(obj && Object.prototype.toString.call(obj) != '[object Object]') return;
+        obj.extraInfo = obj.extraInfo ? utils.changeJSON2Query(obj.extraInfo) : '';
+        obj = Object.assign(this.commonUpData, obj);
         sendLog(this.sendUrl, obj);
     }
+
 
     /**
      * 定时上报
