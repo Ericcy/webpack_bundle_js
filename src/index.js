@@ -14,7 +14,6 @@ class DFCollectSDK {
         this.version = '1.0.0';
         console.log('埋点的版本号：' + this.version);
         this.sendUrl = 'http://10.10.5.65/tracker/add';       // 数据上报接口
-        this.heartBeatUrl = '';                               // 心跳接口-----用来计算页面的停留时间
         this.commonUpData = {
             userId: utils.cookie.getItem('mall_userId') || '',          // 用户id
             sessionId: utils.cookie.getItem('sessionId') || '',         // 设备号
